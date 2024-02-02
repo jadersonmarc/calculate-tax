@@ -6,14 +6,9 @@ class StockTax
       @accumulated_loss = 0.0
       @tax = {}
     end
-    p @transaction_history
-
-    def call
-
-    end
   
     # Calcula o imposto a ser pago sobre a venda de ações
-    def calculate_tax(sell_transaction)
+    def calculate_taxes(sell_transaction)
         total_taxes = 0.0
         @transaction_history.each_with_index do |sell_transaction, index|
           next if sell_transaction.operation == "buy"
@@ -68,3 +63,4 @@ class StockTax
     
         weighted_average
       end
+end

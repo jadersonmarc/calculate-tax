@@ -9,3 +9,4 @@ class Operation
       @quantity = operation_data["quantity"].to_i
     end
   end
+  
