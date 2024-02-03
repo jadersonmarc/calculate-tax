@@ -25,10 +25,10 @@ class TransactionProcessor
 
   def parse_data
     parsed_operations = []
-    @transactions.each do |transactions_list|
+    @transactions.each_with_index do |transactions_list, list_index|
       parsed_operation_list = []
-      JSON.parse(transactions_list).each do |transaction_data|
-        parsed_operation_list << Operation.new(transaction_data)
+      JSON.parse(transactions_list).each_with_index do |transaction_data, operation_index|
+        parsed_operation_list << Operation.new(transaction_data, list_index)
       end
       parsed_operations << parsed_operation_list
     end
@@ -36,16 +36,9 @@ class TransactionProcessor
   end
 
   def calculate_taxes(parsed_operations)
-    taxes_list = []
-    parsed_operations.each do |operation_list|
-      stock_tax_calculator = StockTax.new(operation_list)
-      operation_taxes = []
-      operation_list.each do |operation|
-        operation_taxes << { "tax": stock_tax_calculator.calculate_taxes(operation) }
-      end
-      taxes_list << operation_taxes
-    end
-    taxes_list
+    stock_taxes = parsed_operations.map { |transaction_list| StockTax.new(transaction_list) }
+    stock_taxes.each { |stock_tax| stock_tax.calculate_taxes }
+    stock_taxes.map(&:tax)
   end
 
 
