@@ -19,7 +19,7 @@ cd code_challenge
 gem install bundler
 bundle install
 
-## Usage
+## Usag
 
 To use the stock tax calculator, follow these steps:
 
