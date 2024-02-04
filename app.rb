@@ -47,8 +47,9 @@ class TransactionProcessor
 
   def process_transactions
     transactions = input_data
-     parsed_operations = parse_data
-    p  calculate_taxes(parsed_operations)
+    parsed_operations = parse_data
+    taxes = calculate_taxes(parsed_operations)
+    p taxes.map { |stock_tax| stock_tax }
   end
  
 end

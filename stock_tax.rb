@@ -47,6 +47,8 @@ class StockTax
         if net_profit > START_VALUE 
           @accumulated_loss = START_VALUE
           operation_taxes << { tax: net_profit * TAX_PERCENT } if total_operation_value > MIN_OPERATION_VALUE
+        else
+          operation_taxes << { tax: START_VALUE } 
         end
         
       end
