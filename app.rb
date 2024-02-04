@@ -4,6 +4,8 @@ require_relative 'operation'
 require_relative 'stock_tax'
 
 class TransactionProcessor
+  attr_reader :transactions
+
   def initialize
     @transactions = []
   end
@@ -25,6 +27,7 @@ class TransactionProcessor
 
   def parse_data
     parsed_operations = []
+    @transactions
     @transactions.each_with_index do |transactions_list, list_index|
       parsed_operation_list = []
       JSON.parse(transactions_list).each_with_index do |transaction_data, operation_index|
@@ -44,10 +47,12 @@ class TransactionProcessor
 
   def process_transactions
     transactions = input_data
-    parsed_operations = parse_data
-    p calculate_taxes(parsed_operations)
+     parsed_operations = parse_data
+    p  calculate_taxes(parsed_operations)
   end
  
 end
 
-TransactionProcessor.new.process_transactions
+if __FILE__ == $PROGRAM_NAME
+  TransactionProcessor.new.process_transactions
+end

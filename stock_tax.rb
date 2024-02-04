@@ -1,14 +1,16 @@
 class StockTax
+  START_VALUE = 0.00
+  MIN_OPERATION_VALUE = 20000.0
+  TAX_PERCENT = 0.2
+
   attr_reader :transaction_history, :accumulated_loss, :tax
 
   def initialize(transaction_history)
     @transaction_history = transaction_history
-    @accumulated_loss = 0.0
-    @accumulated_loss_positive = false
+    @accumulated_loss = START_VALUE
     @tax = []
   end
 
-  # Calcula o imposto a ser pago sobre a venda de ações
   def calculate_taxes
     @tax = []
     operation_taxes = []
@@ -16,37 +18,35 @@ class StockTax
     @transaction_history.each_with_index do |transaction, index|
       if transaction.operation == "buy"
         operation_taxes << {
-          tax: 0.0
+          tax: START_VALUE
         }
       else
         gross_profit = transaction.quantity * (transaction.unit_cost - weighted_average_price(index))
   
-        if gross_profit < 0.0
+        if gross_profit < START_VALUE
           @accumulated_loss += gross_profit
           operation_taxes << {
-          tax: 0.0
+          tax: START_VALUE
         }
           next
         end
   
         total_operation_value = transaction.quantity * transaction.unit_cost
-        if total_operation_value < 20000.0 
+
+        if total_operation_value < MIN_OPERATION_VALUE 
           operation_taxes << {
-            tax: 0.0
+            tax: START_VALUE
           }
         end
 
-        # Calcula o lucro líquido
         net_profit = gross_profit - @accumulated_loss.abs
 
+        # Update accumulated loss considering the deduction of the net profit
         @accumulated_loss = @accumulated_loss - (@accumulated_loss - net_profit)
     
-        # Calcula os impostos da operação com base no lucro líquido
-        if net_profit > 0.0 
-          @accumulated_loss = 0.0
-          operation_taxes << { tax: net_profit * 0.2 } if total_operation_value > 20000.0
-        else
-          operation_taxes << { tax: 0.0 }
+        if net_profit > START_VALUE 
+          @accumulated_loss = START_VALUE
+          operation_taxes << { tax: net_profit * TAX_PERCENT } if total_operation_value > MIN_OPERATION_VALUE
         end
         
       end
@@ -54,15 +54,14 @@ class StockTax
     end
 
     @tax << operation_taxes
-    @accumulated_loss = 0.0
+    @accumulated_loss = START_VALUE
   end
 
   private
 
-  # Calcula o preço médio ponderado das ações
   def weighted_average_price(index)
-    weighted_average = 0.0
-    total_shares = 0.0
+    weighted_average = START_VALUE
+    total_shares = START_VALUE
 
     @transaction_history.each_with_index do |transaction, transaction_index|
       next if transaction_index > index
