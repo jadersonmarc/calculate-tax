@@ -18,7 +18,7 @@ class StockTax
     @transaction_history.each_with_index do |transaction, index|
       if transaction.operation == "buy"
         operation_taxes << {
-          tax: START_VALUE
+          tax: format('%.2f', START_VALUE)
         }
       else
         gross_profit = transaction.quantity * (transaction.unit_cost - weighted_average_price(index))
@@ -26,7 +26,7 @@ class StockTax
         if gross_profit < START_VALUE
           @accumulated_loss += gross_profit
           operation_taxes << {
-          tax: START_VALUE
+          tax: format('%.2f', START_VALUE)
         }
           next
         end
@@ -35,7 +35,7 @@ class StockTax
 
         if total_operation_value < MIN_OPERATION_VALUE 
           operation_taxes << {
-            tax: START_VALUE
+            tax: format('%.2f', START_VALUE)
           }
         end
 
@@ -46,9 +46,9 @@ class StockTax
     
         if net_profit > START_VALUE 
           @accumulated_loss = START_VALUE
-          operation_taxes << { tax: net_profit * TAX_PERCENT } if total_operation_value > MIN_OPERATION_VALUE
+          operation_taxes << { tax: format('%.2f',(net_profit * TAX_PERCENT)) } if total_operation_value > MIN_OPERATION_VALUE
         else
-          operation_taxes << { tax: START_VALUE } 
+          operation_taxes << { tax: format('%.2f', START_VALUE) } 
         end
         
       end
