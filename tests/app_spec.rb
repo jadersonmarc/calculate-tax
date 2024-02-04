@@ -41,14 +41,14 @@ describe TransactionProcessor do
         parsed_operations = [[Operation.new({ "operation": "buy", "unit-cost": 10.00, "quantity": 10000 }, 0),
                             Operation.new({ "operation": "sell", "unit-cost": 20.00, "quantity": 60000 }, 0)]]
 
-        stock_tax_double = instance_double(StockTax, calculate_taxes: nil, tax: [[{ tax: 0.0 }, { tax: 12000.0 }]])
+        stock_tax_double = instance_double(StockTax, calculate_taxes: nil, tax: [[{ tax: 0.00 }, { tax: 12000.00 }]])
         allow(stock_tax_double).to receive(:calculate_taxes)
         allow(StockTax).to receive(:new).and_return(stock_tax_double)
 
         processor = TransactionProcessor.new
         taxes = processor.calculate_taxes(parsed_operations)
 
-        expect(taxes).to eq([[[{ tax: 0.0 }, { tax: 12000.0 }]]])
+        expect(taxes).to eq([[[{ tax: 0.00 }, { tax: 12000.00 }]]])
     end
   end
 end

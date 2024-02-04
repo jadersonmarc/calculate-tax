@@ -11,12 +11,11 @@ unzip the project
 cd code_challenge
 
 3. Install dependencies:
-'ruby'
-'rspec'
-'readline'
-'json'
-
+install ruby (https://www.ruby-lang.org/pt/documentation/)
 gem install bundler
+gem install readline
+gem install rspec
+gem install json
 bundle install
 
 ## Usag
