@@ -51,5 +51,17 @@ describe TransactionProcessor do
         expect(taxes).to eq([[[{ tax: 0.00 }, { tax: 12000.00 }]]])
     end
   end
+
+  describe "#format_response" do
+  it "formats response when only one list contains taxes" do
+    list_taxes = [[[{ tax: "0.00" }]]]
+    expect(processor.format_response(list_taxes)).to eq([{ "tax": "0.00" }])
+  end
+
+  it "formats response when more than one list contains taxes" do
+    list_taxes = [[[{ tax: "0.00" }]], [[{ tax: "20000.00" }]]]
+    expect(processor.format_response(list_taxes)).to eq([[{ "tax": "0.00" }], [{ "tax": "20000.00" }]])
+  end
+end  
 end
 
