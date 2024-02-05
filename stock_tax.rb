@@ -13,52 +13,78 @@ class StockTax
 
   def calculate_taxes
     @tax = []
-    operation_taxes = []
-    
+  
     @transaction_history.each_with_index do |transaction, index|
-      if transaction.operation == "buy"
-        operation_taxes << {
-          tax: format('%.2f', START_VALUE)
-        }
-      else
-        gross_profit = transaction.quantity * (transaction.unit_cost - weighted_average_price(index))
-  
-        if gross_profit < START_VALUE
-          @accumulated_loss += gross_profit
-          operation_taxes << {
-          tax: format('%.2f', START_VALUE)
-        }
-          next
-        end
-  
-        total_operation_value = transaction.quantity * transaction.unit_cost
-
-        if total_operation_value < MIN_OPERATION_VALUE 
-          operation_taxes << {
-            tax: format('%.2f', START_VALUE)
-          }
-        end
-
-        net_profit = gross_profit - @accumulated_loss.abs
-
-        # Update accumulated loss considering the deduction of the net profit
-        @accumulated_loss = @accumulated_loss - (@accumulated_loss - net_profit)
-    
-        if net_profit > START_VALUE 
-          @accumulated_loss = START_VALUE
-          operation_taxes << { tax: format('%.2f',(net_profit * TAX_PERCENT)) } if total_operation_value > MIN_OPERATION_VALUE
-        else
-          operation_taxes << { tax: format('%.2f', START_VALUE) } 
-        end
-        
-      end
-     
+      operation_taxes = calculate_taxes_for_transaction(transaction, index)
+      @tax << operation_taxes
     end
-
-    @tax << operation_taxes
+  
     @accumulated_loss = START_VALUE
   end
+  
+  def calculate_taxes_for_transaction(transaction, index)
+    operation_taxes = []
+  
+    if transaction.operation == "buy"
+      operation_taxes << { tax: format_zero_tax }
+    else
+      gross_profit = calculate_gross_profit(transaction, index)
+  
+      if gross_profit < START_VALUE
+        accumulate_loss(gross_profit)
+        operation_taxes << { tax: format_zero_tax }
+      else
+        total_operation_value = transaction.quantity * transaction.unit_cost
 
+        if total_operation_value < MIN_OPERATION_VALUE
+          operation_taxes << { tax: format_zero_tax }
+        else
+          net_profit = calculate_net_profit(gross_profit)
+          update_accumulated(net_profit)
+
+          if net_profit > START_VALUE
+            operation_taxes << { tax: format_tax(net_profit) }
+            reset_accumulated_loss
+          else
+            operation_taxes << { tax: format_zero_tax }
+          end
+        end
+      end
+    end
+  
+    operation_taxes
+  end
+  
+  def calculate_gross_profit(transaction, index)
+    transaction.quantity * (transaction.unit_cost - weighted_average_price(index))
+  end
+  
+  def calculate_net_profit(gross_profit)
+    gross_profit - @accumulated_loss.abs
+  end
+  
+  def accumulate_loss(loss)
+    @accumulated_loss += loss
+  end
+
+  def update_accumulated(net_profit)
+    @accumulated_loss = @accumulated_loss - (@accumulated_loss - net_profit)
+  end 
+  
+  def reset_accumulated_loss
+    @accumulated_loss = START_VALUE
+  end
+  
+  def format_zero_tax
+    format('%.2f', START_VALUE)
+  end
+  
+  def format_tax(tax_amount)
+    format('%.2f', tax_amount * TAX_PERCENT)
+  end
+
+
+  
   private
 
   def weighted_average_price(index)

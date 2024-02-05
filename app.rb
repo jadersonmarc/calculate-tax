@@ -45,20 +45,32 @@ class TransactionProcessor
   end
 
   def format_response(list_taxes)
-    taxed_lists_count = list_taxes.count { |list| list.any? { |element| element.first.key?(:tax) } }
-    
-    if taxed_lists_count == 1
-      tax_values = list_taxes.flatten.map { |element| element[:tax] }
-      json_response = tax_values.map { |tax| { "tax": tax } }
+    if has_single_taxed_list?(list_taxes)
+      format_single_taxed_list(list_taxes)
     else
-      lists = list_taxes.map { |list| list }
-      json_lists = lists.map do |list|
-      list.map { |element| { "tax": element.first[:tax] } }
+      format_multiple_taxed_lists(list_taxes)
     end
-    end
-
   end
-
+  
+  def has_single_taxed_list?(list_taxes)
+    list_taxes.count { |list| list.any? { |element| element.first.key?(:tax) } } == 1
+  end
+  
+  def format_single_taxed_list(list_taxes)
+    list_taxes.flatten.map { |element| { "tax": element[:tax] } }
+  end
+  
+  def format_multiple_taxed_lists(list_taxes)
+    list_taxes.map do |list|
+      list.flat_map do |element|
+        if element.count > 1
+          element
+        else
+          [{ "tax": element.first[:tax] }]
+        end
+      end
+    end
+  end
 
   def process_transactions
     transactions = input_data
