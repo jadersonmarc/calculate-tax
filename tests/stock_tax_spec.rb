@@ -18,7 +18,7 @@ RSpec.describe StockTax do
             stock_taxes = transactions.map { |transaction_list| StockTax.new(transaction_list) }
             stock_taxes.each { |stock_tax| stock_tax.calculate_taxes }
             tax =  stock_taxes.map(&:tax)
-           expect(tax).to eq([[[{:tax=>"0.00"}, {:tax=>"0.00"}, {:tax=>"0.00"}, {:tax=>"1400.00"}]]])
+           expect(tax).to eq([[[{:tax=>"0.00"}], [{:tax=>"0.00"}], [{:tax=>"0.00"}], [{:tax=>"1400.00"}]]])
       end
 
       it 'calculates taxes considering accumulated loss' do
@@ -34,7 +34,7 @@ RSpec.describe StockTax do
         tax = stock_taxes.map(&:tax)
 
         # Espera-se que o imposto seja zero devido ao prejuízo aplicado
-         expect(tax).to eq([[[{:tax=>"0.00"}, {:tax=>"0.00"}]]])
+         expect(tax).to eq([[[{:tax=>"0.00"}], [{:tax=>"0.00"}]]])
       end
     end
   end
