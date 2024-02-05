@@ -18,18 +18,20 @@ gem install rspec
 gem install json
 bundle install
 
-## Usag
+## Usage
 
 To use the stock tax calculator, follow these steps:
 
-1. run the project with comand  ruby app.rb
+1. run the project with command ruby: app.rb
 2. Ensure your transaction data is in the correct format.
 
 ## Tests
 
 1. Navigate to the tests project directory:
+cd code_challenge
 
-1. run the project with comand  for files tests
+1. run the project tests
+cd tests
 rspec stock_tax_spec.rb
 rspec app_spec.rb
 rspec operation_spec.rb
